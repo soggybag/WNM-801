@@ -1,0 +1,144 @@
+
+<!-- Use this outer area as the clickable interactive area -->
+<div id="dial-container" class="unselectable">
+    <!-- The dial here will do the rotating -->
+    <div id="dial">
+        <!-- This is the pointer on the dial -->
+        <div id="pointer"></div>
+    </div>
+    
+    <div id="dial-value">0</div>
+</div>
+<div id="display">
+    <div id="angle-a">0</div>
+    <div id="angle-b">0</div>
+    <div id="angle-c">0</div>
+</div>
+
+<style>
+    #display {
+        position: absolute;
+        bottom: 0;
+        text-align: center;
+        width:100%;
+    }
+    
+    #display div {
+        width: 33%;
+        float: left;
+    }
+    
+    /* This becomes the touchable areait should be larger than the dial. It could be transparent */
+    #dial-container {
+        width: 500px;
+        height: 500px;
+        background: #ffdddd;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+    
+    /* This is the rotating element. It could also be transparent. */
+    #dial {
+        background: #ff9999;
+        position: relative;
+        width: 300px;
+        height: 300px;
+        left: 50%;
+        top: 50%;
+        transform-origin: left top;
+        transform: translate(-50%, -50%);
+    }
+    
+    /* This child element of the dial marks the position of the dial.  */
+    #pointer {
+        width: 10px;
+        height: 10px;
+        background: #000;
+        position: absolute;
+        left: 145px;
+        top: 0;
+    }
+    
+    /* Dial value */
+    #dial-value {
+        position: absolute;
+        width: 100px;
+        height: 40px;
+        line-height: 40px;
+        font-family: Helvetica;
+        font-size: 24px;
+        text-align: center;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+    
+    .unselectable {
+        -webkit-user-select: none;
+    }
+</style>
+<script src="jquery-2.0.3.min.js"></script>
+<script>
+    
+    var dragging = false;
+    var offsetAngle = 0;
+    var currentAngle = 0;
+    var lastAngle = 0;
+    var widget = 180 / Math.PI;
+    var knobValue = 1;
+    
+    // I needed to do this in two places, so I made it a function. 
+    // Pass in a position ({left:, top: }) it returns the angle in radians.
+    function getPositionOfMouseAroundCenter(position) {
+        // The value 250 is half the size of the dial container. We need this to get the 
+        // center. Position only has the left and top! 
+        var centerX = event.clientX - position.left - 250;
+        var centerY = event.clientY - position.top - 250;
+        var angle = Math.atan2(centerY, centerX);
+        return angle;
+    }
+    
+    // Begin the touch/click
+    $("#dial-container").mousedown(function(event){
+        // Set dragging to true
+        dragging = true;
+        // Get the starting angle
+        offsetAngle = getPositionOfMouseAroundCenter($("#dial-container").position());
+    });
+    
+    // End the drag release the mouse break contact for a touch
+    $("#dial-container").mouseup(function(event){
+        // Set dragging to false
+        dragging = false;
+        lastAngle = currentAngle; // Save the last angle 
+    });
+    
+    // Handle a drag/mousemove
+    $("#dial-container").mousemove(function(event){
+        // When dragging is true rotate the dial
+        if (dragging) {
+            // Get the angle in radians
+            var rad = getPositionOfMouseAroundCenter($(this).position());
+            // Get the difference between the starting angle and the current angle. 
+            var dif = rad - offsetAngle;
+            // Set the angle of the dial to it's last angle plus the difference. 
+            currentAngle = lastAngle + dif;
+            // Set section snaps the dial to a number of steps. 
+            var step = 360 / 30; // Set the number of steps to 30
+            var angle = (currentAngle * widget); // Convert radians to deg
+            var snapStep = Math.round(angle / step); // Round to the step  
+            var snapAngle = snapStep * step; // Set the step angle
+            // Set the rotation of the dial. NOTE! you need to set all of the values for 
+            // transform here, notice I added translate. 
+            $("#dial").css("transform", "rotate("+snapAngle+"deg) translate(-50%, -50%)");
+            // Use this to display values
+            $("#dial-value").html(Math.round(Math.abs((snapAngle % 360) / 12)));
+            // $("#angle-a").html(Math.round(Math.abs((snapAngle % 360) / 12)));
+            // $("#angle-b").html("");
+            // $("#angle-c").html("");
+        }
+    });
+    
+</script>
