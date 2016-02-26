@@ -1,0 +1,213 @@
+
+<!-- Use this outer area as the clickable interactive area -->
+<div id="dial-container" class="unselectable">
+    <!-- The dial here will do the rotating -->
+    <div id="dial">
+        <!-- This is the pointer on the dial -->
+        <div id="pointer"></div>
+    </div>
+    
+    <div id="dial-value">0</div>
+</div>
+<div id="display">
+    <div id="angle-a">0</div>
+    <div id="angle-b">0</div>
+    <div id="angle-c">0</div>
+</div>
+
+
+<div id="d2">
+    <div id="d3">
+        <p id="d4"></p>
+    </div>
+</div>
+
+<style>
+    
+    #d2 {
+        position:absolute;
+        width: 300px;
+        height: 300px;
+        background-color: aqua;
+    }
+    
+    #d3 {
+        background: #99ff99;
+        position: relative;
+        width: 200px;
+        height: 200px;
+        left: 50%;
+        top: 50%;
+        transform-origin: left top;
+        transform: translate(-50%, -50%);
+    }
+    
+    
+    
+    
+    
+    
+    #display {
+        position: absolute;
+        bottom: 0;
+        text-align: center;
+        width:100%;
+    }
+    
+    
+    
+    #display div {
+        width: 33%;
+        float: left;
+    }
+    
+    /* This becomes the touchable areait should be larger than the dial. It could be transparent */
+    #dial-container {
+        width: 500px;
+        height: 500px;
+        background: #ffdddd;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+    
+    /* This is the rotating element. It could also be transparent. */
+    #dial {
+        background: #ff9999;
+        position: relative;
+        width: 300px;
+        height: 300px;
+        left: 50%;
+        top: 50%;
+        transform-origin: left top;
+        transform: translate(-50%, -50%);
+    }
+    
+    /* This child element of the dial marks the position of the dial.  */
+    #pointer {
+        width: 10px;
+        height: 10px;
+        background: #000;
+        position: absolute;
+        left: 145px;
+        top: 0;
+    }
+    
+    /* Dial value */
+    #dial-value {
+        position: absolute;
+        width: 100px;
+        height: 40px;
+        line-height: 40px;
+        font-family: Helvetica;
+        font-size: 24px;
+        text-align: center;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+    
+    .unselectable {
+        -webkit-user-select: none;
+    }
+</style>
+<script src="jquery-2.0.3.min.js"></script>
+<script>
+    /* 
+        Progressing from the previous example this example makes the closure into a 
+        factory that produces dial objects. Allowing you to create as many dials 
+        as you might need. 
+    */
+        
+    
+/** */
+    
+function makeDial(container, dial, display, range) {
+    (function(container, dial, display, range) {
+        var dragging = false;
+        var offsetAngle = 0;
+        var currentAngle = 0;
+        var lastAngle = 0;
+        var widget = 180 / Math.PI;
+        var knobValue = 1;
+
+        var container = container;
+        var dial = dial;
+        var display = display; 
+        var range = range;
+        
+        function containerCenter() {
+            var x = container.position().left + container.width() / 2;
+            var y = container.position().top + container.heigh();
+            return {x: x, y: y};
+        }
+
+        function getPositionOfMouseAroundCenter(position) { 
+            // TODO: Fix offset for size of container
+            // TODO: Check center to center of container
+            
+            console.log( containerCenter() );
+            
+            var centerX = event.clientX - position.left - 250;
+            var centerY = event.clientY - position.top - 250;
+            
+            console.log(centerX, centerY);
+            
+            var angle = Math.atan2(centerY, centerX);
+            if (angle < 0) {
+                angle += (Math.PI * 2);
+            } 
+
+            console.log(angle % (Math.PI * 2));
+
+            return angle % (Math.PI * 2);
+        }
+
+        /** Begin the touch/click */
+        container.mousedown(function(event){
+            dragging = true;
+            offsetAngle = getPositionOfMouseAroundCenter($("#dial-container").position());
+        });
+
+        /** End the drag release the mouse break contact for a touch */
+        container.mouseup(function(event){
+            dragging = false;
+            lastAngle = currentAngle; // Save the last angle 
+        });
+
+        /** Handle a drag/mousemove */
+        container.mousemove(function(event){
+            if (dragging) {
+                var rad = getPositionOfMouseAroundCenter($(this).position());
+                var dif = rad - offsetAngle;
+                currentAngle = lastAngle + dif;
+                currentAngle = currentAngle % (Math.PI * 2);
+
+                var step = 360 / range; // Set the number of steps to 30
+
+                var angle = currentAngle * widget; // Convert radians to deg
+                // Convert negative values to positive
+                if (angle < 0) {
+                    angle = 360 + angle;
+                }
+                var snapStep = Math.round(angle / step); // Round to the step  
+                var snapAngle = snapStep * step; // Set the step angle
+                dial.css("transform", "rotate("+snapAngle+"deg) translate(-50%, -50%)");
+                display.html(Math.round(angle / (360 / range)));
+            }
+        });
+
+        return {};
+    })(container, dial, display, range);
+
+}
+
+    makeDial($("#dial-container"), $("#dial"), $("#dial-value"), 30);
+    makeDial($("#d2"), $("#d3"), $("#d4"), 10);
+/** 
+    The values here are pass into the this closure. Adjust these to set the behavior of 
+    the script. 
+*/
+    
+</script>

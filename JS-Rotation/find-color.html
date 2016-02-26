@@ -1,0 +1,20 @@
+<script>
+    
+    var str = "rgb(0, 111, 222) rgb(155, 15, 120) something {#2f0033} (#38f) #437892 *rgb(55,15,120);";
+    
+    
+    var color = 'rgb(255, 15, 120)';
+    var matchColors = /rgb\((\d{1,3}),(\d{1,3}),(\d{1,3})\)/g;
+    var array = str.match(matchColors);
+    console.log(array);
+    
+    console.log("Finding Hex Colors");
+    var matchHex2 = /#([a-f0-9]{6}|[a-f0-9]{3})\b/gi; // /#([0-9a-f]{3}|[0-9a-f]{6})/; // /#(?:[0-9a-fA-F]{6})/;
+    var match2 = matchHex2.exec(str);
+    console.log(match2);
+    for (var i in match2) {
+        console.log(match2[i]);
+    }
+
+     
+</script>

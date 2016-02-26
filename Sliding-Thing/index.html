@@ -1,0 +1,96 @@
+
+<script src="jquery-2.0.3.min.js"></script>
+
+<style>
+    
+    #container {
+        width: 100%;
+        overflow: hidden;
+        -webkit-user-select: none;
+    }
+    
+    #sliding-thing {
+        position: absolute;
+    }
+    
+    .box {
+        width: 99px;
+        height: 100px;
+        border-right: 1px solid black;
+        background-color: #ddd;
+        float: left;
+    }
+    
+    .selected {
+        background-color: red;
+    }
+    
+</style>
+
+<div id="container">
+    <div id="sliding-thing">
+
+    </div>
+</div>
+
+
+<script>
+    var boxes = 22;
+    
+    // Make some content for the slider
+    for (var i=0; i < boxes; i++) {
+        var box = $("<div class='box'>Box "+i+"</div>");
+        $("#sliding-thing").append(box);
+    }
+    
+    $("#sliding-thing").css("width", "calc(100px * "+boxes+")");
+    
+    
+    // Drag
+    var isDragging = false;
+    var offset = 0;
+    var slidingX = 0;
+    var boxWidth = 100;
+    var index = 0;
+    
+    var left = 0;
+    var right = $("#container").width() - $("#sliding-thing").width();
+    
+    $("#sliding-thing").mousedown(function(event){
+        isDragging = true;
+        offset = event.pageX - $(this).position().left;
+        console.log(offset);
+    });
+    
+    $(window).mouseup(function(event){
+        isDragging = false;
+        if (slidingX > left) {
+            $("#sliding-thing").animate({left:0}, 200, snap);
+        } else if (slidingX < right) {
+            $("#sliding-thing").animate({left:right+"px"}, 200, snap);
+        } else { 
+            slidingX = Math.round(slidingX / boxWidth) * boxWidth;
+            $("#sliding-thing").animate({left:slidingX+"px"}, 200, snap);
+        }
+    });
+        
+    function snap() {
+        index = Math.abs(Math.round(slidingX / boxWidth));
+        $(".box").removeClass("selected").eq(index).addClass("selected");
+        console.log(index);
+    }
+
+    $(window).mousemove(function(event){
+        if (isDragging) {
+            slidingX = event.pageX - offset;
+            $("#sliding-thing").css("left", slidingX+"px");
+        }
+    });
+    
+</script>
+
+
+
+
+
+

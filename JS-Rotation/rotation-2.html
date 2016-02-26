@@ -81,7 +81,19 @@
 </style>
 <script src="jquery-2.0.3.min.js"></script>
 <script>
+    /* 
+        Starting from the last example you could improve on it by 
+        making a "module". A module will encapsulate all of the code into it's own scope. 
+        This will avoid conflicts with variables and function names. 
+    */
+        
     
+/** 
+    All of the code that runs the dial is contained in a self executing function.
+    Look at the bottom to find the values passed that set the container, dial, display,
+    and range parameters you see here. 
+*/
+(function(container, dial, display, range) {
     var dragging = false;
     var offsetAngle = 0;
     var currentAngle = 0;
@@ -89,11 +101,7 @@
     var widget = 180 / Math.PI;
     var knobValue = 1;
     
-    // I needed to do this in two places, so I made it a function. 
-    // Pass in a position ({left:, top: }) it returns the angle in radians.
-    function getPositionOfMouseAroundCenter(position) {
-        // The value 250 is half the size of the dial container. We need this to get the 
-        // center. Position only has the left and top! 
+    function getPositionOfMouseAroundCenter(position) { 
         var centerX = event.clientX - position.left - 250;
         var centerY = event.clientY - position.top - 250;
         var angle = Math.atan2(centerY, centerX);
@@ -104,38 +112,29 @@
         console.log(angle % (Math.PI * 2));
         
         return angle % (Math.PI * 2);
-        // return angle;
     }
     
-    // Begin the touch/click
-    $("#dial-container").mousedown(function(event){
-        // Set dragging to true
+    /** Begin the touch/click */
+    container.mousedown(function(event){
         dragging = true;
-        // Get the starting angle
         offsetAngle = getPositionOfMouseAroundCenter($("#dial-container").position());
     });
     
-    // End the drag release the mouse break contact for a touch
-    $("#dial-container").mouseup(function(event){
-        // Set dragging to false
+    /** End the drag release the mouse break contact for a touch */
+    container.mouseup(function(event){
         dragging = false;
         lastAngle = currentAngle; // Save the last angle 
     });
     
-    // Handle a drag/mousemove
-    $("#dial-container").mousemove(function(event){
-        // When dragging is true rotate the dial
+    /** Handle a drag/mousemove */
+    container.mousemove(function(event){
         if (dragging) {
-            // Get the angle in radians
             var rad = getPositionOfMouseAroundCenter($(this).position());
-            // Get the difference between the starting angle and the current angle. 
             var dif = rad - offsetAngle;
-            // Set the angle of the dial to it's last angle plus the difference. 
             currentAngle = lastAngle + dif;
             currentAngle = currentAngle % (Math.PI * 2);
             
-            // Set section snaps the dial to a number of steps. 
-            var step = 360 / 30; // Set the number of steps to 30
+            var step = 360 / range; // Set the number of steps to 30
             
             var angle = currentAngle * widget; // Convert radians to deg
             // Convert negative values to positive
@@ -144,15 +143,14 @@
             }
             var snapStep = Math.round(angle / step); // Round to the step  
             var snapAngle = snapStep * step; // Set the step angle
-            // Set the rotation of the dial. NOTE! you need to set all of the values for 
-            // transform here, notice I added translate. 
-            $("#dial").css("transform", "rotate("+snapAngle+"deg) translate(-50%, -50%)");
-            // Use this to display values
-            $("#dial-value").html(Math.round(angle /12));
-            // $("#angle-a").html(Math.round(Math.abs((snapAngle % 360) / 12)));
-            // $("#angle-b").html("");
-            // $("#angle-c").html("");
+            dial.css("transform", "rotate("+snapAngle+"deg) translate(-50%, -50%)");
+            display.html(Math.round(angle / (360 / range)));
         }
     });
+})($("#dial-container"), $("#dial"), $("#dial-value"), 30);
+/** 
+    The values here are pass into the this closure. Adjust these to set the behavior of 
+    the script. 
+*/
     
 </script>

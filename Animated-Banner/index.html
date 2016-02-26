@@ -1,0 +1,172 @@
+<style>
+    body {
+        margin: 0;
+        background: #ddd;
+    }
+    
+    #banner {
+        width: 100%;
+        background: #fff;
+    }
+    
+    .box {
+        position: absolute;
+        overflow: hidden;
+        border: 5px solid black;
+        
+    }
+    
+    .box-inner {
+        position: absolute;
+        left: 0;
+        transition: 200ms;
+    }
+    
+    .box:hover > .box-inner {
+        left: -100%;
+    }
+    
+    .box-img {
+        display: block;
+        float: right;
+    }
+    
+    .box-desc {
+        float: right;
+        background: #fff;
+    }
+    
+    .box-desc > * {
+        margin: 10px;
+        
+    }
+    
+    .back-box {
+        position: absolute;
+        background: #000;
+    }
+</style>
+
+<div is="banner-container">
+    <div id="banner-back"></div>
+    <div id="banner"></div>
+</div>
+
+
+
+
+<script src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
+<script src="jquery-2.0.3.min.js"></script>
+<script src="images.js"></script>
+
+<script>
+    
+    var bannerHeight = 400;
+    var borderWidth = 5;
+    var boxArray = [];
+    
+    function Box(l, t, w, h) {
+        
+    }
+    
+    $("#banner").css("height", bannerHeight+"px");
+    
+    function random(min, max) {
+        return Math.round((Math.random() * (max - min)) + min);
+    }
+    
+    var delay = 0;
+    var delay2 = 0;
+    
+    function makeBackBox(l, t, w, h) {
+        
+        
+        
+        var boxWidth = random(3, 18) * 10;
+        var boxHeight = random(3, 18) * 10;
+        var screenWidth = $(window).width();
+        
+        var r = random(0, 4);
+        var color = "#000";
+        
+        console.log(r);
+        
+        if (r == 0) {
+            // left top
+            l = l + (random(3, 13) * -10);
+            t = t + (random(3, 13) * -10);
+        } else if (r == 1) {
+            // right top
+            l = l + w + (random(3, 13) * 10);
+            t = t + (random(3, 13) * -10);
+        } else if (r == 2) {
+            // right bottom
+            l = l + w + (random(4, 12) * -10);
+            t = t + h + (random(4, 12) * -10);
+        } else if (r == 3) {
+            // left bottom
+            l = l + (random(4, 14) * 110);
+            t = t + h + (random(-4, 14) * -10);
+            color = "#f00";
+        }
+        
+        var box = $("<div class='back-box' style='width:"
+                    +boxWidth+"px; height:"
+                    +boxHeight+"px; background-color:"
+                    +color+";'></div>");
+        
+        box.css({left:(l+screenWidth)+"px", top:t+"px", height:0});
+        box.delay(delay2).animate({left:l+"px"}).delay(50).animate({height:boxHeight+"px"});
+        delay2 += 100;
+        
+        $("#banner-back").append(box);
+    }
+    
+    function makebox(l, t, width, height, src, desc) {
+        var box = $("<div class='box'><div class='box-inner' style='width:"
+                    +(width*2)+"px'><img class='banner-img' src='images/"
+                    +src+"' width='"
+                    +width+"' height='"+
+                    height+"'> <div class='box-desc' style='width:"
+                    +width+"px; height:"
+                    +height+"px;'>"
+                    +desc+"</div></div></div>");
+        
+        var screenWidth = $(window).width();
+        var startLeft = l + screenWidth;
+        
+        
+        box.css({left:startLeft+"px", top:t+"px", width:width+"px", height:"0px"});
+        
+        box.delay(delay)
+            .animate({left: l+"px"}, 200)
+            .delay(50)
+            .animate({height:height+"px"}, 200);
+        delay += 100;
+        
+        $("#banner").append(box);
+    }
+    
+    function makeRandomBox() {
+        delay = 0;
+        var n = 10;
+        var totalLeft = 10;
+        for (var i in images) {
+            var h = images[i].height; // random(3, 15) * 10;
+            var t = random(0, (bannerHeight - h) / 10) * 10;
+            var w = images[i].width; // random(3, 20) * 10;
+            var l = totalLeft;
+            totalLeft += w + borderWidth + (random(0, 3) * 10);
+            
+            makebox(l, t, w, h, images[i].name, images[i].desc);
+            
+            var numberOfBackBoxes = random(0, 4);
+            for (var i=0; i < numberOfBackBoxes; i++) {
+                makeBackBox(l, t, w, h);
+            }
+            
+        } 
+    }
+    
+    makeRandomBox();
+</script>
