@@ -1,0 +1,60 @@
+<div id="map" style="width:500px;height:380px;">
+
+<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDt8lAgWYmlR93D6cO4kCs10Nb-3DvlOQA"></script>
+<script src="jquery-2.0.3.min.js"></script>
+<script>
+    
+    /******************************************************************
+        This example loads JSON from a local file, it will only work 
+        in Safari. Google Chrome will give a security error! 
+    ******************************************************************/
+    
+    // This function loads marker data from JSON, makes markers and centers
+    // the map around the markers. You'll need to pass the map object 
+    // to this function!
+    function getMarkers(map) {
+        // Load some JSON data. 
+        $.get("markers.json", function(data){
+            // Make a bounds object to set the boundary of the map. 
+            var bounds = new google.maps.LatLngBounds();
+            // Convert data from JSON to a JS Object.
+            data = JSON.parse(data);
+            // Loop through data
+            for (var i in data) {
+                // Get the lat and lon from data
+                var lon = Number(data[i].geoPoint.lon);
+                var lat = Number(data[i].geoPoint.lat);
+                // Make a Marker NOTE order: lat, lon
+                var marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(lat, lon) 
+                });
+                
+                // Set the marker on the map. 
+                marker.setMap(map);
+                // Add the marker to the bounds object
+                bounds.extend(marker.position);
+            }
+            // After the loop completes fit to bounds. 
+            map.fitBounds(bounds);
+        });
+    }
+    
+    
+    // This function initialized google map
+    function initialize() {
+        // Set the default map properties. 
+        var mapProp = {
+            center:new google.maps.LatLng(51.508742,-0.120850),
+            zoom:5,
+            mapTypeId:google.maps.MapTypeId.ROADMAP
+        };
+        // Make the map
+        var map = new google.maps.Map(document.getElementById("map"),mapProp);
+        
+        // Now load some markers by calling the function above. 
+        // Pass a reference to the map to the getMarkers function. 
+        getMarkers(map); // 
+    }
+    google.maps.event.addDomListener(window, 'load', initialize);
+    
+</script>
