@@ -22,7 +22,7 @@
         background: #ddd;
         width: 33%;
         float: left;
-        
+        height: 100%;
     }
     
     .page-1 {
@@ -51,14 +51,17 @@
         <div class="sliding-section page-1">Q</div>
         <div class="sliding-section page-2">W</div>
         <div class="sliding-section page-3">E</div>
+        <div class="sliding-section page-1">F</div>
     </div>
 </div>
 
 <div class="sliding-container">
     <div id="c" class="sliding-thing">
-        <div class="sliding-section page-1">Z</div>
-        <div class="sliding-section page-2">X</div>
-        <div class="sliding-section page-3">C</div>
+        <div class="sliding-section page-1">11111</div>
+        <div class="sliding-section page-2">22222</div>
+        <div class="sliding-section page-3">33333</div>
+        <div class="sliding-section page-2">44444</div>
+        <div class="sliding-section page-1">55555</div>
     </div>
 </div>
 
@@ -70,13 +73,15 @@
 <script>
     
     $("#a, #b, #c").hammer().bind("swipeleft, swiperight", function(event){
-        // Need to bind 
+        // Need to bind swipe events
     });
     
     $(".sliding-thing").each(function(){
         $(this).attr("data-panel-number", 0);
         var n = $(this).children().length;
         $(this).attr("data-panel-total", n);
+        $(this).css("width", (100*n)+"%");
+        $(this).children().css("width", (100/n)+"%");
     });
     
     $(".sliding-thing").on("swipeleft", function(event){
