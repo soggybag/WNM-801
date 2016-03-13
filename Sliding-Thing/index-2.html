@@ -65,17 +65,20 @@
     </div>
 </div>
 
-
+<!-- Need to include the Hammer js, and Hammer jQuery libs -->
 <script src="hammer.min.js"></script>
 <script src="jquery-2.0.3.min.js"></script>
 <script src="jquery.hammer.js"></script>
 
 <script>
-    
+    // Bind the swipeleft, and swiperight events to the sliding things.
     $("#a, #b, #c").hammer().bind("swipeleft, swiperight", function(event){
         // Need to bind swipe events
     });
     
+    // This sets up the sliding things. It gets the number of child elements, 
+    // and sets the size of the elements. Here we also store some data in each 
+    // element to keep track of which panel is currently visible. 
     $(".sliding-thing").each(function(){
         $(this).attr("data-panel-number", 0);
         var n = $(this).children().length;
@@ -84,6 +87,7 @@
         $(this).children().css("width", (100/n)+"%");
     });
     
+    // This handles a swipe left
     $(".sliding-thing").on("swipeleft", function(event){
         console.log("*** swipe left");
         var panelNumber = Number($(this).attr("data-panel-number"));
@@ -91,11 +95,11 @@
         if (panelNumber < panelTotal -1) {
             panelNumber ++;
         }
-        
         $(this).attr("data-panel-number", panelNumber);
         $(this).animate({left:-100 * panelNumber + "%"}, 400);
     });
     
+    // Here we handle a swipe right
     $(".sliding-thing").on("swiperight", function(event){
         console.log("*** swipe right");
         var panelNumber = Number($(this).attr("data-panel-number"));
@@ -103,7 +107,6 @@
         if (panelNumber > 0) {
             panelNumber --;
         }
-        
         $(this).attr("data-panel-number", panelNumber);
         $(this).animate({left:-100 * panelNumber + "%"}, 400);
     });
