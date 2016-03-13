@@ -1,0 +1,109 @@
+<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+
+<style>
+    .sliding-container {
+        width: 100%;
+        position: relative;
+        height: 100px;
+        border: 1px solid #000;
+        -webkit-user-select: none;
+        overflow: hidden;
+    }
+    
+    .sliding-thing {
+        height: 100px;
+        width: 300%;
+        position: absolute;
+        left: 0;
+        -webkit-transition: 300ms;
+    }
+    
+    .sliding-section {
+        background: #ddd;
+        width: 33%;
+        float: left;
+        
+    }
+    
+    .page-1 {
+        background: #fdd;
+    }
+    
+    .page-2 {
+        background: #dfd;
+    }
+    
+    .page-3 {
+        background: #fdf;
+    }
+</style>
+
+<div class="sliding-container">
+    <div id="a" class="sliding-thing">
+        <div class="sliding-section page-1"><p>Apple</p></div>
+        <div class="sliding-section page-2"><p>Banana</p></div>
+        <div class="sliding-section page-3"><p>Cherry</p></div>
+    </div>
+</div>
+
+<div class="sliding-container">
+    <div id="b" class="sliding-thing">
+        <div class="sliding-section page-1">Q</div>
+        <div class="sliding-section page-2">W</div>
+        <div class="sliding-section page-3">E</div>
+    </div>
+</div>
+
+<div class="sliding-container">
+    <div id="c" class="sliding-thing">
+        <div class="sliding-section page-1">Z</div>
+        <div class="sliding-section page-2">X</div>
+        <div class="sliding-section page-3">C</div>
+    </div>
+</div>
+
+
+<script src="hammer.min.js"></script>
+<script src="jquery-2.0.3.min.js"></script>
+<script src="jquery.hammer.js"></script>
+
+<script>
+    
+    $("#a, #b, #c").hammer().bind("swipeleft, swiperight", function(event){
+        // Need to bind 
+    });
+    
+    $(".sliding-thing").each(function(){
+        $(this).attr("data-panel-number", 0);
+        var n = $(this).children().length;
+        $(this).attr("data-panel-total", n);
+    });
+    
+    $(".sliding-thing").on("swipeleft", function(event){
+        console.log("*** swipe left");
+        var panelNumber = Number($(this).attr("data-panel-number"));
+        var panelTotal = Number($(this).attr("data-panel-total"));
+        if (panelNumber < panelTotal -1) {
+            panelNumber ++;
+        }
+        
+        $(this).attr("data-panel-number", panelNumber);
+        $(this).animate({left:-100 * panelNumber + "%"}, 400);
+    });
+    
+    $(".sliding-thing").on("swiperight", function(event){
+        console.log("*** swipe right");
+        var panelNumber = Number($(this).attr("data-panel-number"));
+        var panelTotal = Number($(this).attr("data-panel-total"));
+        if (panelNumber > 0) {
+            panelNumber --;
+        }
+        
+        $(this).attr("data-panel-number", panelNumber);
+        $(this).animate({left:-100 * panelNumber + "%"}, 400);
+    });
+    
+</script>
+
+
+
