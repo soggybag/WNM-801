@@ -1,0 +1,73 @@
+<style>
+    .container {
+        position: relative;
+        width: calc(1000px / 2);
+        height: calc(1333px / 2);
+        margin: auto;
+    }
+    
+    .image-small {
+        width: calc(1000px / 2);
+        height: calc(1333px / 2);
+        background-image: url(IMG_1076.png);
+        background-size: contain;
+    }
+    
+    .image-large {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100px;
+        height: 100px;
+        border: 1px solid #fff;
+        box-shadow: 0 0 5px #000;
+        background-image: url(IMG_1076.png);
+        background-repeat: no-repeat;
+        cursor: pointer;
+    }
+</style>
+
+<div class="container">
+    <div class="image-small"></div>
+    <div class="image-large"></div>
+</div>
+
+<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+<script>
+    //
+    var dragging = false;
+    $(".image-large").mousedown(function(event){
+        dragging = true;
+    });
+    
+    $(window).mouseup(function(event){
+        dragging = false;
+    })
+    
+    $(window).mousemove(function(event){
+        if (dragging) {
+            var x = event.pageX;
+            var y = event.pageY;
+            var offset = $(".container").offset();
+            x = x - offset.left - 50;
+            y = y - offset.top - 50;
+            
+            var dx = (x * -2) - 50;
+            var dy = (y * -2) - 50;
+            
+            $(".image-large").css({
+                left:x+"px", 
+                top:y+"px",
+                backgroundPosition: dx+"px"+" "+dy+"px"
+            });
+        }
+    });
+</script>
+
+
+
+
+
+
+
+
